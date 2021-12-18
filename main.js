@@ -379,23 +379,6 @@ $("#click").on("click", () => {
     color: "unset",
   });
 
-  input = Array.from($("#regex").val());
-  let group = [];
-  for (let i = 0; i < input.length; i++) {
-    //place capture groups in an array(group) as a single array element
-    if (input[i] === "(") {
-      let str = "";
-      while (input[i] !== ")") {
-        str += input[i];
-        i++;
-      }
-      str += input[i];
-      group.push(str);
-    } else {
-      group.push(input[i]);
-    }
-  }
-  console.log("array between parentheses:", group);
   let group2 = [];
   for (let i = 0; i < group.length; i++) {
     //place each regex input separated by | symbol as single array(group2) elemets
