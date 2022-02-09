@@ -1,18 +1,21 @@
 const arrayFromCodes = (array, min, max) => {
   for (let i = min; i <= max; i++) {
-    array.push(String.fromCharCode(i));
+    array.push(String.fromCharCode(i)); //from utf16 codes array generator
   }
 };
 
 const randomIndex = (array) => {
+  //returns a random index value depending on the given array's length
   return Math.floor(Math.random() * array.length);
 };
 
 const randomOutput = (array1, array2) => {
+  //push into array1 a random value from array2
   array1.push(array2[randomIndex(array2)]);
 };
 
 const replaceVal = (oldVal, newVal, array) => {
+  //replace a value in an array
   for (let i = 0; i <= array.length; i++) {
     if (array[i] === oldVal) {
       array[i] = newVal;
@@ -22,6 +25,7 @@ const replaceVal = (oldVal, newVal, array) => {
 };
 
 const concatArrays = (...any) => {
+  // return the concatenation of arrays in a new array
   let array = [];
   for (let i = 0; i < any.length; i++) {
     array = array.concat(any[i]);
@@ -41,7 +45,7 @@ arrayFromCodes(alpha, 97, 122);
 const digits = [];
 arrayFromCodes(digits, 48, 57);
 
-const nonAlpha = [];
+const nonAlpha = []; //specificed from UTF-16 codes and not from negating alpha chars
 arrayFromCodes(nonAlpha, 32, 47);
 arrayFromCodes(nonAlpha, 58, 64);
 arrayFromCodes(nonAlpha, 91, 96);
@@ -51,16 +55,19 @@ const whitespace = [];
 arrayFromCodes(whitespace, 9, 10);
 arrayFromCodes(whitespace, 12, 13);
 
-const nonWhitespace = concatArrays(alpha, digits, nonAlpha);
+const nonWhitespace = concatArrays(alpha, digits, nonAlpha); //nonAlpha here is specificed from UTF-16 codes and not from negating alpha chars
 const nonDigit = concatArrays(letters, nonAlpha, whitespace);
 
 const plusOperator = (i, selector, data, outputFromInput) => {
+  //+ quantifier 1 or more(max specified here is 30)
   let randomMax = Math.floor(Math.random() * 30);
   if (outputFromInput === "random") {
+    //the output to be generated is based on input from a character class ex: \w+
     for (let j = 0; j <= randomMax; j++) {
-      selector.append(data[Math.floor(Math.random() * data.length)]);
+      selector.append(data[Math.floor(Math.random() * data.length)]); //append a random index of the given array for a number of times based on the generated random number
     }
   } else if (outputFromInput === "same") {
+    //the output to be generated is based on a constant input ex: a letter (s+)
     if (data === input[i + 1]) {
       for (let j = 0; j <= randomMax; j++) {
         selector.append(data); // * / + .
@@ -84,7 +91,7 @@ const asteriskOperator = (i, selector, data, outputFromInput) => {
   } else {
     if (outputFromInput === "random") {
       for (let j = 0; j < randomMax; j++) {
-        selector.append(data[Math.floor(Math.random() * data.length)]);
+        selector.append(data[Math.floor(Math.random() * data.length)]); //output a random value from the given array 0-randomMax times
       }
     } else if (outputFromInput === "same") {
       if (data === input[i + 1]) {
@@ -124,6 +131,7 @@ const zeroOrOne = (i, selector, data, outputFromInput) => {
 };
 
 const printExactly = (i, number, selector, data, outputFromInput) => {
+  //exact quantifier ex: a{3}
   if (outputFromInput === "random") {
     for (let k = 0; k < number; k++) {
       selector.append(data[randomIndex(data)]);
@@ -160,13 +168,15 @@ const quantifiers = (mainArray, i, data, charsAfterI, outputFromInput) => {
         return i + charsAfterI;
       case "{":
         for (let j = i + charsAfterI + 1; j < mainArray.length; j++) {
+          //loop around characters after the left curly brace
           if (mainArray[j] === "}") {
             let numbers = [];
             for (let k = i + charsAfterI + 1; k < j; k++) {
-              numbers.push(mainArray[k]);
+              numbers.push(mainArray[k]); //push into numbers[] the integers inside curly braces
             }
             let min = "";
             for (i of numbers) {
+              //store the integers representing the minimum in a between quantifier {min,max}
               if (i === ",") {
                 break;
               } else {
@@ -175,6 +185,7 @@ const quantifiers = (mainArray, i, data, charsAfterI, outputFromInput) => {
             }
             let maxArray = [];
             for (let i = numbers.length - 1; i >= 0; i--) {
+              //store the integers representing the maximum in a between quantifier (min, max) reciprocally
               if (numbers[i] === ",") {
                 break;
               } else {
@@ -183,6 +194,7 @@ const quantifiers = (mainArray, i, data, charsAfterI, outputFromInput) => {
             }
             let max = "";
             for (let i = maxArray.length - 1; i >= 0; i--) {
+              //reciprocate the integers in maxArray
               max = max.concat(maxArray[i]);
             }
             min = Number(min);
@@ -190,9 +202,11 @@ const quantifiers = (mainArray, i, data, charsAfterI, outputFromInput) => {
             console.log(min, max);
             let r;
             if (min < max) {
+              //print for 'random number between min and max' times
               r = Math.floor(Math.random() * (max + 1 - min) + min);
               printExactly(i, r, $("#output"), data, outputFromInput);
             } else if (min > max && max === 0) {
+              //check if quantifier contains only a minimum. !!! if max = ''; then Number(max) === 0
               if (min > 30) {
                 $("#output")
                   .html("MINIMUM QUANTIFIER SHOULD NOT BE GREATER THAN 30")
@@ -200,6 +214,7 @@ const quantifiers = (mainArray, i, data, charsAfterI, outputFromInput) => {
                 break;
               }
               if (max === 0) {
+                //print for 'random number between min and 30' times
                 r = Math.floor(Math.random() * (30 - min) + min);
                 printExactly(i, r, $("#output"), data, outputFromInput);
                 console.log(r);
@@ -378,6 +393,7 @@ $("#click").on("click", () => {
   $("#output").empty().css({
     color: "unset",
   });
+  console.log("success");
 
   input = Array.from($("#regex").val());
   let group = [];
